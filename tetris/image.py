@@ -43,9 +43,9 @@ class Gallery:
             self.fading[index] = blockset
             
         # Parse ghost blocks from sprite sheet
-        xoff += BlockSize.width * 6
+        xoff += BlockSize.width * 5
         for index in range(3):
-            sub = blocksheet.subimage(xoff, index * BlockSize.height, BlockSize.width, BlockSize.height)
+            sub = blocksheet.subimage(xoff, BlockSize.height * index, BlockSize.width, BlockSize.height)
             self.ghosts[index] = Block(sub)
         
     # Render a block with level & index at specified grid point.
