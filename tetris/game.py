@@ -23,6 +23,7 @@ class Tetris:
         self.currPiece = randomPiece()
         self.fallSpeed = 28
         self.timeToDrop = self.fallSpeed
+        self.running = False
 
     # Process key state events.
     def processKeyEvents(self, keys):
@@ -112,7 +113,7 @@ class Tetris:
         
         self.setGridPiece(self.currPiece)
         if place:
-            if self.currPiece.pos.y <= 0:
+            if self.currPiece.top() <= 0:
                 self.endGame()
             else:
                 self.placePiece(self.currPiece)
@@ -207,6 +208,8 @@ class Tetris:
     # Create new piece.
     def newPiece(self):
         self.currPiece = randomPiece()
+        if not self.validMove(self.currPiece):
+            self.endGame()
         self.setGridPiece(self.currPiece)
     
     # Start a new game.
@@ -216,18 +219,16 @@ class Tetris:
         self.newPiece()
         self.mixer.play(Sound.Start)
         self.mixer.loopMusic()
+        self.running = True
         
     # End the game
     def endGame(self):
         self.mixer.play(Sound.GameOver)
-        self.currPiece = None
+        self.running = False
         
     # Return if game is over
     def gameOver(self):
-        if not self.currPiece:
-            return True
-        else:
-            return False
+        return not self.running
 
 # Game statistics
 class Statistics:

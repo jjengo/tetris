@@ -42,6 +42,13 @@ class Piece:
         rotated = zip(*self.grid[::-1])
         self.grid = rotated
         
+    # Return the first non-empty row
+    def top(self):
+        for y in range(len(self.grid)):
+            if len([x for x in range(len(self.grid[y])) if self.grid[y][x]]):
+                return self.pos.y + y
+        return self.pos.y
+        
 # Square shaped piece.
 class SquarePiece(Piece):
     
