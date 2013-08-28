@@ -17,6 +17,7 @@ class Gallery:
     
     # Initialize
     def __init__(self):
+        self.splash = load("splash.png")
         self.background = load("blue-background.png")
         self.blocks = {}
         
@@ -28,10 +29,6 @@ class Gallery:
                 blockset.append(Block(sub))
             self.blocks[level] = blockset
         
-    # Render the background.
-    def renderBackground(self, gfx):
-        gfx.blit(self.background, (0, 0))
-
     # Render a block with level & index at specified grid point.
     def renderBlock(self, gfx, level, index, pt):
         if level in self.blocks and index >= 0 and index < 3:

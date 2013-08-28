@@ -18,9 +18,11 @@ class Core:
     def __init__(self, gfx):
         self.gfx = gfx
         self.keys = {}
+        self.menu = Menu()
         self.gallery = Gallery()
         self.game = Tetris()
-        self.state = Core.Running
+        self.state = Core.Menu
+        self.timeToMenu = 0
         
     # Run the core engine.
     def run(self):
@@ -37,7 +39,7 @@ class Core:
             
             # Game State: Menu
             if self.state == Core.Menu:
-                pass
+                self.menu.render(self.gfx, self.gallery)
             
             # Game State: Running
             elif self.state == Core.Running:
@@ -78,6 +80,11 @@ class Core:
     # Process all relevant key events
     def processKeyEvents(self):
         
+        if K_RETURN in self.keys:
+            if self.state == Core.Menu:
+                self.state = Core.Running
+                self.game.newGame()
+        
         if K_p in self.keys:
             if self.state == Core.Running:
                 self.state = Core.Paused
@@ -88,15 +95,43 @@ class Core:
     
     # Update all values
     def update(self):
+        
         if self.state == Core.Running:
             if self.game.gameOver():
                 self.game.mixer.stopall()
                 self.state = Core.GameOver
+                self.timeToMenu = 200
+        elif self.state == Core.GameOver:
+            self.timeToMenu -= 1
+            if not self.timeToMenu:
+                self.state = Core.Menu
     
     # Render values.
     def render(self):
         
-        font = pygame.font.SysFont("Arial", 18, True)
         if self.state == Core.Paused:
+            font = pygame.font.SysFont("OCR A Extended", 18)
             label = font.render("PAUSED", 1, (255, 255, 255))
             self.gfx.blit(label, ((ScreenSize[0] / 2) - (label.get_width() / 2), 180))
+
+class Menu:
+    
+    def render(self, gfx, gallery):
+        
+        # Splash.
+        gfx.fill((0, 69, 134))
+        gfx.blit(gallery.splash, (10, 10))
+        color = (225, 225, 225)
+        pygame.draw.aaline(gfx, color, (10, 10), (470, 10), 1)
+        pygame.draw.aaline(gfx, color, (470, 10), (470, 279), 1)
+        pygame.draw.aaline(gfx, color, (10, 279), (470, 279), 1)
+        pygame.draw.aaline(gfx, color, (10, 10), (10, 279), 1)
+        
+        # Labels.
+        font = pygame.font.SysFont("OCR A Extended", 20)
+        label = font.render("Play Game", 1, color)
+        gfx.blit(label, ((ScreenSize[0] / 2) - (label.get_width() / 2), 300))
+        font = pygame.font.SysFont("OCR A Extended", 12)
+        label = font.render("Jonathan Jengo", 1, color)
+        gfx.blit(label, ((ScreenSize[0] / 2) - (label.get_width() / 2), 425))
+        

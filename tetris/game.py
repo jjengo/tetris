@@ -20,12 +20,9 @@ class Tetris:
         self.grid = []
         self.mixer = Mixer()
         self.stats = Statistics()
-        self.currPiece = None
+        self.currPiece = randomPiece()
         self.fallSpeed = 20
         self.timeToDrop = self.fallSpeed
-        
-        # TODO - remove
-        self.newGame()
 
     # Process key state events.
     def processKeyEvents(self, keys):
@@ -51,7 +48,8 @@ class Tetris:
     # Render all sprites.
     def render(self, gfx, gallery):
         
-        gallery.renderBackground(gfx)
+        #gallery.renderBackground(gfx)
+        gfx.blit(gallery.background, (0, 0))
         self.stats.render(gfx)
         
         # Render grid blocks
@@ -217,13 +215,13 @@ class Statistics:
     # Render statistics values
     def render(self, gfx):
 
-        font = pygame.font.SysFont("Arial", 14, True)
+        font = pygame.font.SysFont("OCR A Extended", 14, True)
         label = font.render("LEVEL", 1, (255, 255, 255))
         gfx.blit(label, (70 - (label.get_width() / 2), 190))
         label = font.render("LINES", 1, (255, 255, 255))
         gfx.blit(label, (70 - (label.get_width() / 2), 260))
         
-        font = pygame.font.SysFont("Arial", 28)
+        font = pygame.font.SysFont("OCR A Extended", 28)
         label = font.render(repr(self.score), 1, (255, 255, 255))
         gfx.blit(label, (340 - label.get_width(), 5))
         label = font.render(repr(self.level), 1, (255, 255, 255))
