@@ -6,6 +6,7 @@ from pygame.locals import *
 from . import image as Image
 from .game import Tetris
 from .image import Gallery
+from .util import ScreenSize
 
 # Core engine
 class Core:
@@ -46,15 +47,15 @@ class Core:
             
             # Game State: Paused
             elif self.state == Core.Paused:
-                pass
+                self.game.render(self.gfx, self.gallery)
             
             # Game State: Game Over
             elif self.state == Core.GameOver:
-                pass
+                self.game.render(self.gfx, self.gallery)
             
             self.processKeyEvents()
             self.update()
-            self.render(self.gfx)
+            self.render()
             
             pygame.display.update()
             clock.tick(30)
@@ -76,12 +77,26 @@ class Core:
             
     # Process all relevant key events
     def processKeyEvents(self):
-        pass
+        
+        if K_p in self.keys:
+            if self.state == Core.Running:
+                self.state = Core.Paused
+                self.game.mixer.stopMusic()
+            elif self.state == Core.Paused:
+                self.state = Core.Running
+                self.game.mixer.loopMusic()
     
     # Update all values
     def update(self):
-        pass
+        if self.state == Core.Running:
+            if self.game.gameOver():
+                self.game.mixer.stopall()
+                self.state = Core.GameOver
     
     # Render values.
-    def render(self, gfx):
-        pass
+    def render(self):
+        
+        font = pygame.font.SysFont("Arial", 18, True)
+        if self.state == Core.Paused:
+            label = font.render("PAUSED", 1, (255, 255, 255))
+            self.gfx.blit(label, ((ScreenSize[0] / 2) - (label.get_width() / 2), 180))

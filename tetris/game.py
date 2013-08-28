@@ -1,6 +1,7 @@
 # Author: Jonathan Jengo
 
 import sys
+import pygame
 from pygame.locals import *
 
 from .image import Gallery
@@ -51,6 +52,7 @@ class Tetris:
     def render(self, gfx, gallery):
         
         gallery.renderBackground(gfx)
+        self.stats.render(gfx)
         
         # Render grid blocks
         for x in range(GridSize.width):
@@ -112,7 +114,7 @@ class Tetris:
         self.setGridPiece(self.currPiece)
         if place:
             if self.currPiece.pos.y <= 0:
-                self.gameOver()
+                self.endGame()
             else:
                 self.placePiece(self.currPiece)
 
@@ -132,9 +134,11 @@ class Tetris:
                     self.grid[x][row] = 0
             for row in cleared:
                 self.shiftRowDown(row)
-                            
-        # Start a new piece at the top
+            
+        # Update statistics.
         self.mixer.playDropped(len(cleared))
+        if self.stats.update(len(cleared)):
+            self.mixer.play(Sound.LevelUp)
         self.newPiece()        
     
     # Shift above rows down from cleared row.
@@ -184,16 +188,55 @@ class Tetris:
         self.grid = [[0 for y in range(GridSize.height)] for x in range(GridSize.width)]
         self.stats = Statistics()
         self.newPiece()
+        self.mixer.play(Sound.Start)
+        self.mixer.loopMusic()
         
-    # Do game over.
+    # End the game
+    def endGame(self):
+        self.mixer.play(Sound.GameOver)
+        self.currPiece = None
+        
+    # Return if game is over
     def gameOver(self):
-        sys.exit(0)
+        if not self.currPiece:
+            return True
+        else:
+            return False
 
 # Game statistics
 class Statistics:
     
+    Scores = {0:10, 1:100, 2:300, 3:500, 4:1000}
+    
+    # Initialize
     def __init__(self):
         self.score = 0
         self.level = 0
         self.lines = 0
         
+    # Render statistics values
+    def render(self, gfx):
+
+        font = pygame.font.SysFont("Arial", 14, True)
+        label = font.render("LEVEL", 1, (255, 255, 255))
+        gfx.blit(label, (70 - (label.get_width() / 2), 190))
+        label = font.render("LINES", 1, (255, 255, 255))
+        gfx.blit(label, (70 - (label.get_width() / 2), 260))
+        
+        font = pygame.font.SysFont("Arial", 28)
+        label = font.render(repr(self.score), 1, (255, 255, 255))
+        gfx.blit(label, (340 - label.get_width(), 5))
+        label = font.render(repr(self.level), 1, (255, 255, 255))
+        gfx.blit(label, (70 - (label.get_width() / 2), 207))
+        label = font.render(repr(self.lines), 1, (255, 255, 255))
+        gfx.blit(label, (70 - (label.get_width() / 2), 277))
+
+    # Update stats based on # cleared lines
+    def update(self, cleared):
+        self.score += Statistics.Scores[cleared]
+        self.lines += cleared
+        if self.lines / 10 > self.level:
+            self.level += 1
+            return True
+        else:
+            return False

@@ -7,9 +7,12 @@ import pygame
 def load(filename):
     return pygame.mixer.Sound(os.path.join("sounds", filename))
 
+def loadMusic(filename):
+    return pygame.mixer.music.load(os.path.join("sounds", filename))
+
 # Various sounds
 class Sound:
-    Clear, Drop, GameOver, Lateral, LevelUp, Rotate, Select, Start, Tetris, Music = range(10)
+    Clear, Drop, GameOver, Lateral, LevelUp, Rotate, Select, Start, Tetris = range(9)
 
 # Sound mixer
 class Mixer:
@@ -26,7 +29,7 @@ class Mixer:
         self.sounds[Sound.Select] = load("select.wav")
         self.sounds[Sound.Start] = load("start.wav")
         self.sounds[Sound.Tetris] = load("tetris.wav")
-        self.sounds[Sound.Music] = load("tetrismidi1.mid")
+        self.music = loadMusic("tetrismusic.mp3")
         self.looping = {}
         
     # Play a sound
@@ -36,6 +39,10 @@ class Mixer:
             self.loop(key)
         else:
             self.sounds[key].play(loops)
+            
+    # Play music
+    def loopMusic(self):
+        pygame.mixer.music.play(-1, 0.0)
             
     # Play a looping sound
     def loop(self, key):
@@ -48,6 +55,10 @@ class Mixer:
         self.sounds[key].stop()
         if key in self.looping:
             self.looping[key] = False
+            
+    # Stop music
+    def stopMusic(self):
+        pygame.mixer.music.stop()
                         
     # Pause all playback of sounds
     def pause(self):
@@ -59,6 +70,7 @@ class Mixer:
             
     # Stop playback of all sounds
     def stopall(self):
+        self.stopMusic()
         for key in self.looping:
             self.sounds[key].stop()
             self.looping[key] = False
