@@ -21,7 +21,7 @@ class Tetris:
         self.mixer = Mixer()
         self.stats = Statistics()
         self.currPiece = randomPiece()
-        self.fallSpeed = 20
+        self.fallSpeed = 28
         self.timeToDrop = self.fallSpeed
 
     # Process key state events.
@@ -48,15 +48,16 @@ class Tetris:
     # Render all sprites.
     def render(self, gfx, gallery):
         
-        #gallery.renderBackground(gfx)
         gfx.blit(gallery.background, (0, 0))
         self.stats.render(gfx)
         
         # Render grid blocks
         for x in range(GridSize.width):
             for y in range(GridSize.height):
-                if self.grid[x][y]:
+                if self.grid[x][y] > 0:
                     gallery.renderBlock(gfx, self.stats.level, self.grid[x][y] - 1, Point(x, y))
+                elif self.grid[x][y] < 0:
+                    gallery.renderGhost(gfx, (self.grid[x][y] * -1) - 1, Point(x, y))
 
     # Translate piece by delta
     def lateralPieceMove(self, dx):
@@ -137,6 +138,9 @@ class Tetris:
         self.mixer.playDropped(len(cleared))
         if self.stats.update(len(cleared)):
             self.mixer.play(Sound.LevelUp)
+            if self.fallSpeed > 5:
+                self.fallSpeed -= 2
+            
         self.newPiece()        
     
     # Shift above rows down from cleared row.
@@ -148,6 +152,22 @@ class Tetris:
 
     # Set piece values into grid.                
     def setGridPiece(self, piece):
+        
+        # Find and set piece ghost grid points
+        yorig = piece.pos.y
+        for y in range(GridSize.height - piece.pos.y):
+            piece.pos.y += 1
+            if not self.validMove(piece):
+                piece.pos.y -= 1
+                break
+        
+        for y in range(len(piece.grid)):
+            for x in range(len(piece.grid[y])):
+                if piece.grid[y][x]:
+                    self.grid[piece.pos.x + x][piece.pos.y + y] = (piece.grid[y][x] * -1)
+        
+        # Set grid values for piece.
+        piece.pos.y = yorig
         for y in range(len(piece.grid)):
             for x in range(len(piece.grid[y])):
                 if piece.grid[y][x]:
@@ -155,6 +175,14 @@ class Tetris:
     
     # Remove piece values from grid.
     def clearGridPiece(self, piece):
+        
+        # Clear ghost grid points.
+        for x in range(GridSize.width):
+            for y in range(GridSize.height):
+                if self.grid[x][y] < 0:
+                    self.grid[x][y] = 0
+        
+        # Clear piece grid points.
         for y in range(len(piece.grid)):
             for x in range(len(piece.grid[y])):
                 if piece.grid[y][x]:
