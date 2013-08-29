@@ -21,6 +21,7 @@ class Tetris:
         self.mixer = Mixer()
         self.stats = Statistics()
         self.currPiece = randomPiece()
+        self.nextPiece = randomPiece()
         self.fallSpeed = 28
         self.timeToDrop = self.fallSpeed
         self.running = False
@@ -59,6 +60,13 @@ class Tetris:
                     gallery.renderBlock(gfx, self.stats.level, self.grid[x][y] - 1, Point(x, y))
                 elif self.grid[x][y] < 0:
                     gallery.renderGhost(gfx, (self.grid[x][y] * -1) - 1, Point(x, y))
+
+        # Render next blocks
+        for y in range(len(self.nextPiece.grid)):
+            for x in range(len(self.nextPiece.grid[y])):
+                if self.nextPiece.grid[y][x]:
+                    pt = Point(x - self.nextPiece.origin.x, y - self.nextPiece.origin.y)
+                    gallery.renderNext(gfx, self.stats.level, self.nextPiece.grid[y][x] - 1, self.nextPiece.size, pt)
 
     # Translate piece by delta
     def lateralPieceMove(self, dx):
@@ -113,7 +121,7 @@ class Tetris:
         
         self.setGridPiece(self.currPiece)
         if place:
-            if self.currPiece.top() <= 0:
+            if self.currPiece.pos.y + self.currPiece.origin.x <= 0:
                 self.endGame()
             else:
                 self.placePiece(self.currPiece)
@@ -205,7 +213,8 @@ class Tetris:
     
     # Create new piece.
     def newPiece(self):
-        self.currPiece = randomPiece()
+        self.currPiece = self.nextPiece
+        self.nextPiece = randomPiece()
         if not self.validMove(self.currPiece):
             self.endGame()
         self.setGridPiece(self.currPiece)

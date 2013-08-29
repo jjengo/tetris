@@ -19,7 +19,7 @@ class Gallery:
     def __init__(self):
         
         self.splash = load("splash.png")
-        self.background = load("blue-background.png")
+        self.background = load("tetris-background.png")
         self.blocks = {}
         self.fading = {}
         
@@ -47,8 +47,9 @@ class Gallery:
             self.blocks[level][index].render(gfx, pt)
 
     # Render a next block with an index at specified grid point.
-    def renderNext(self, gfx, level, index):
-        pass
+    def renderNext(self, gfx, level, index, size, pt):
+        if level in self.blocks and index >= 0 and index < 3:
+            self.blocks[level][index].renderNext(gfx, size, pt)
 
     # Render a fading block with an index and fade at specified grid point.
     def renderFading(self, gfx, index, fade, pt):
@@ -73,10 +74,23 @@ class Block:
         pos = self.gridToPos(pt)
         gfx.blit(self.image, pos.tuple())
         
+    # Render the next block at specified grid [x,y] indices
+    def renderNext(self, gfx, size, pt):
+        pos = self.nextToPos(size, pt)
+        gfx.blit(self.image, pos.tuple())
+        
     # Convert grid point to its [x,y] position coordinates
     def gridToPos(self, pt):
         x = pt.x * BlockSize.width + 140
         y = pt.y * BlockSize.height + 40
+        return Point(x, y)
+    
+    # Cconvert next grid point to its [x,y] position coordinates
+    def nextToPos(self, size, pt):
+        center = Point((size.width * BlockSize.width) / 2, (size.height * BlockSize.height) / 2)
+        offset = Point(411 - center.x, 84 - center.y)
+        x = pt.x * BlockSize.width + offset.x
+        y = pt.y * BlockSize.height + offset.y
         return Point(x, y)
     
 # Container for a sprite sheet image

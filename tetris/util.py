@@ -6,7 +6,7 @@ ScreenSize = (480, 450)
 class Point:
     
     # Initialize
-    def __init__(self, x = 0, y = 0):
+    def __init__(self, x=0, y=0):
         self.x = x
         self.y = y
 
@@ -36,6 +36,10 @@ class Dimension:
     def set(self, width, height):
         self.width = width
         self.height = height
+        
+    # Return rotated dimensions
+    def rotate(self):
+        return Dimension(self.height, self.width)
         
     # Return the dimension as a tuple
     def tuple(self):
