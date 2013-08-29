@@ -73,7 +73,7 @@ class IPiece(Piece):
                      [1, 1, 1, 1],
                      [0, 0, 0, 0],
                      [0, 0, 0, 0]]
-        
+    
 # J shaped piece.
 class JPiece(Piece):
     

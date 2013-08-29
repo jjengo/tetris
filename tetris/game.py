@@ -171,7 +171,7 @@ class Tetris:
         piece.pos.y = yorig
         for y in range(len(piece.grid)):
             for x in range(len(piece.grid[y])):
-                if piece.grid[y][x]:
+                if piece.grid[y][x] and piece.pos.y + y >= 0:
                     self.grid[piece.pos.x + x][piece.pos.y + y] = piece.grid[y][x]
     
     # Remove piece values from grid.
@@ -186,7 +186,7 @@ class Tetris:
         # Clear piece grid points.
         for y in range(len(piece.grid)):
             for x in range(len(piece.grid[y])):
-                if piece.grid[y][x]:
+                if piece.grid[y][x] and piece.pos.y + y >= 0:
                     self.grid[piece.pos.x + x][piece.pos.y + y] = 0
     
     # Check if piece can be moved to new location
@@ -195,14 +195,12 @@ class Tetris:
         for y in range(len(piece.grid)):
             for x in range(len(piece.grid[y])):
 
-                if piece.grid[y][x]:
-                    if piece.pos.x + x < 0 or piece.pos.x + x >= GridSize.width:
+                pt = Point(piece.pos.x + x, piece.pos.y + y)
+                if piece.grid[y][x] and pt.y >= 0:
+                    if pt.x < 0 or pt.x >= GridSize.width or pt.y >= GridSize.height:
                         return False
-                    if piece.pos.y + y < 0 or piece.pos.y + y >= GridSize.height:
+                    if self.grid[pt.x][pt.y]:
                         return False
-                    if self.grid[piece.pos.x + x][piece.pos.y + y]:
-                        return False
-                
         return True
     
     # Create new piece.
