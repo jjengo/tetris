@@ -22,7 +22,7 @@ class Tetris:
         self.stats = Statistics()
         self.currPiece = randomPiece()
         self.nextPiece = randomPiece()
-        self.fallSpeed = 28
+        self.fallSpeed = 30
         self.timeToDrop = self.fallSpeed
         self.running = False
 
@@ -147,8 +147,8 @@ class Tetris:
         self.mixer.playDropped(len(cleared))
         if self.stats.update(len(cleared)):
             self.mixer.play(Sound.LevelUp)
-            if self.fallSpeed > 5:
-                self.fallSpeed -= 2
+            if self.fallSpeed >= 3:
+                self.fallSpeed -= 2.5
             
         self.newPiece()        
     

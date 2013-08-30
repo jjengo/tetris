@@ -43,11 +43,13 @@ class Gallery:
 
     # Render a block with level & index at specified grid point.
     def renderBlock(self, gfx, level, index, pt):
+        level = level % 11
         if level in self.blocks and index >= 0 and index < 3:
             self.blocks[level][index].render(gfx, pt)
 
     # Render a next block with an index at specified grid point.
     def renderNext(self, gfx, level, index, size, pt):
+        level = level % 11
         if level in self.blocks and index >= 0 and index < 3:
             self.blocks[level][index].renderNext(gfx, size, pt)
 
