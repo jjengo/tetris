@@ -226,6 +226,8 @@ class Tetris:
         self.newPiece()
         self.mixer.play(Sound.Start)
         self.mixer.loopMusic()
+        self.fallSpeed = 30
+        self.timeToDrop = self.fallSpeed
         self.running = True
         
     # End the game
