@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # Author: Jonathan Jengo
 
+import pygame._view
 import os
 import sys
 import pygame
