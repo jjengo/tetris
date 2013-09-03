@@ -12,7 +12,10 @@ Pygame 1.9 (compatible with Python 2.7)
 
 ### How to play
 
-TODO
+1. Download the Tetris [distribution](https://www.dropbox.com/s/cqqr6ys4sbq7d6w/tetris.zip)
+2. Unzip the contents on your local machine
+3. Open the 'tetris' folder
+4. Run tetris.exe
 
 ### License
 
