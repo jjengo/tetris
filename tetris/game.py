@@ -147,11 +147,19 @@ class Tetris:
         self.mixer.playDropped(len(cleared))
         if self.stats.update(len(cleared)):
             self.mixer.play(Sound.LevelUp)
-            if self.fallSpeed >= 3:
-                self.fallSpeed -= 2.5
+            self.updateSpeed()
             
         self.newPiece()        
     
+    def updateSpeed(self):
+        if self.fallSpeed >= 2:
+            if self.fallSpeed < 5:
+                self.fallSpeed -= 1
+            elif self.fallSpeed < 10:
+                self.fallSpeed -= 2
+            else:
+                self.fallSpeed -= 3
+            
     # Shift above rows down from cleared row.
     def shiftRowDown(self, row):
         for x in range(GridSize.width):
