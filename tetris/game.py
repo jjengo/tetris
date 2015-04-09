@@ -21,7 +21,6 @@ class Tetris(object):
         self.time_to_drop = self.fall_speed
         self.running = False
 
-    # Process key state events.
     def process_key_events(self, keys):
 
         if K_LEFT in keys:
@@ -33,16 +32,14 @@ class Tetris(object):
         elif K_UP in keys:
             self.rotate_piece(1)
             
-    # Update all states.
     def update(self):
         
         # Countdown to current piece drop
         self.time_to_drop -= 1
         if self.time_to_drop < 0:
             self.time_to_drop = self.fall_speed
-            self.descend_piece()
+            self.drop_piece(1)
         
-    # Render all sprites.
     def render(self, gfx, gallery):
         
         gfx.blit(gallery.background, (0, 0))
@@ -67,13 +64,11 @@ class Tetris(object):
     def lateral_piece_move(self, dx):
         
         self.clear_grid_piece(self.curr_piece)
-        
         self.curr_piece.pos.x += dx
         if not self.valid_move(self.curr_piece):
             self.curr_piece.pos.x -= dx
         else:
             self.mixer.lateral.play()
-            
         self.set_grid_piece(self.curr_piece)
     
     # Rotate piece by delta
@@ -95,10 +90,6 @@ class Tetris(object):
                 self.mixer.rotate.play()
                 
         self.set_grid_piece(self.curr_piece)
-    
-    # Descent piece by a single row
-    def descend_piece(self):
-        self.drop_piece(1)
     
     # Drop piece to the bottom
     def drop_piece(self, incr=GridSize.height):
@@ -167,7 +158,7 @@ class Tetris(object):
         
         # Find and set piece ghost grid points
         yorig = piece.pos.y
-        for y in range(GridSize.height - piece.pos.y):
+        for y in xrange(GridSize.height - piece.pos.y):
             piece.pos.y += 1
             if not self.valid_move(piece):
                 piece.pos.y -= 1
@@ -189,22 +180,22 @@ class Tetris(object):
     def clear_grid_piece(self, piece):
         
         # Clear ghost grid points.
-        for x in range(GridSize.width):
-            for y in range(GridSize.height):
+        for x in xrange(GridSize.width):
+            for y in xrange(GridSize.height):
                 if self.grid[x][y] < 0:
                     self.grid[x][y] = 0
         
         # Clear piece grid points.
-        for y in range(len(piece.grid)):
-            for x in range(len(piece.grid[y])):
+        for y in xrange(len(piece.grid)):
+            for x in xrange(len(piece.grid[y])):
                 if piece.grid[y][x] and piece.pos.y + y >= 0:
                     self.grid[piece.pos.x + x][piece.pos.y + y] = 0
     
     # Check if piece can be moved to new location
     def valid_move(self, piece):
         
-        for y in range(len(piece.grid)):
-            for x in range(len(piece.grid[y])):
+        for y in xrange(len(piece.grid)):
+            for x in xrange(len(piece.grid[y])):
 
                 pt = Point(piece.pos.x + x, piece.pos.y + y)
                 if piece.grid[y][x] and pt.y >= 0:
@@ -214,7 +205,6 @@ class Tetris(object):
                         return False
         return True
     
-    # Create new piece.
     def new_piece(self):
         self.curr_piece = self.next_piece
         self.next_piece = random_piece()
@@ -222,9 +212,8 @@ class Tetris(object):
             self.end_game()
         self.set_grid_piece(self.curr_piece)
     
-    # Start a new game.
-    def newGame(self):
-        self.grid = [[0 for y in range(GridSize.height)] for x in range(GridSize.width)]
+    def new_game(self):
+        self.grid = [[0 for y in xrange(GridSize.height)] for x in xrange(GridSize.width)]
         self.stats = Statistics()
         self.new_piece()
         self.mixer.start.play()
@@ -233,18 +222,22 @@ class Tetris(object):
         self.time_to_drop = self.fall_speed
         self.running = True
         
-    # End the game
     def end_game(self):
         self.mixer.game_over.play()
         self.running = False
         
-    # Return if game is over
     def game_over(self):
         return not self.running
 
 class Statistics(object):
     
-    Scores = {0:10, 1:100, 2:300, 3:500, 4:1000}
+    Scores = {
+        0: 10, 
+        1: 100, 
+        2: 300, 
+        3: 500, 
+        4: 1000
+    }
     
     def __init__(self):
         self.score = 0
@@ -270,7 +263,7 @@ class Statistics(object):
 
     # Update stats based on # cleared lines
     def update(self, cleared):
-        self.score += Statistics.Scores[cleared]
+        self.score += self.Scores[cleared]
         self.lines += cleared
         if self.lines / 10 > self.level:
             self.level += 1

@@ -6,8 +6,8 @@ from tetris.image import Gallery
 from tetris.util import ScreenSize
 
 class Core(object):
-    
-    Menu, Running, Paused, GameOver = range(4)
+
+    Menu, Running, Paused, GameOver = xrange(4)
 
     def __init__(self, gfx):
         self.gfx = gfx
@@ -15,7 +15,7 @@ class Core(object):
         self.menu = Menu()
         self.gallery = Gallery()
         self.game = Tetris()
-        self.state = Core.Menu
+        self.state = self.Menu
         self.time_to_menu = 0
 
     def run(self):
@@ -29,23 +29,13 @@ class Core(object):
                 self.handle_event(event)
                 
             self.gfx.fill((0, 0, 0))
-            
-            # Game State: Menu
-            if self.state == Core.Menu:
+
+            if self.state == self.Menu:
                 self.menu.render(self.gfx, self.gallery)
-            
-            # Game State: Running
-            elif self.state == Core.Running:
-                self.game.process_key_events(self.keys)
-                self.game.update()
-                self.game.render(self.gfx, self.gallery)
-            
-            # Game State: Paused
-            elif self.state == Core.Paused:
-                self.game.render(self.gfx, self.gallery)
-            
-            # Game State: Game Over
-            elif self.state == Core.GameOver:
+            else:
+                if self.state == self.Running:
+                    self.game.process_key_events(self.keys)
+                    self.game.update()
                 self.game.render(self.gfx, self.gallery)
             
             self.process_key_events()
@@ -70,39 +60,36 @@ class Core(object):
             if event.key in self.keys:
                 del self.keys[event.key]
             
-    # Process all relevant key events
     def process_key_events(self):
         
         if K_RETURN in self.keys:
-            if self.state == Core.Menu:
-                self.state = Core.Running
-                self.game.newGame()
+            if self.state == self.Menu:
+                self.state = self.Running
+                self.game.new_game()
         
         if K_p in self.keys:
-            if self.state == Core.Running:
-                self.state = Core.Paused
+            if self.state == self.Running:
+                self.state = self.Paused
                 self.game.mixer.stop_music()
-            elif self.state == Core.Paused:
-                self.state = Core.Running
+            elif self.state == self.Paused:
+                self.state = self.Running
                 self.game.mixer.loop_music()
     
-    # Update all values
     def update(self):
         
-        if self.state == Core.Running:
+        if self.state == self.Running:
             if self.game.game_over():
                 self.game.mixer.stop_music()
-                self.state = Core.GameOver
+                self.state = self.GameOver
                 self.time_to_menu = 200
-        elif self.state == Core.GameOver:
+        elif self.state == self.GameOver:
             self.time_to_menu -= 1
             if not self.time_to_menu:
-                self.state = Core.Menu
-    
-    # Render values.
+                self.state = self.Menu
+
     def render(self):
         
-        if self.state == Core.Paused:
+        if self.state == self.Paused:
             font = pygame.font.SysFont("OCR A Extended", 18)
             label = font.render("PAUSED", 1, (255, 255, 255))
             self.gfx.blit(label, ((ScreenSize[0] / 2) - (label.get_width() / 2), 180))
