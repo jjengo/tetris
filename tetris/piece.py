@@ -48,7 +48,6 @@ class Piece(object):
         return left
 
 class SquarePiece(Piece):
-    
     def __init__(self):
         Piece.__init__(self, 3, -1, 2, 2)
         self.set([[0, 0, 0, 0],
@@ -57,7 +56,6 @@ class SquarePiece(Piece):
                   [0, 0, 0, 0]])
 
 class IPiece(Piece):
-    
     def __init__(self):
         Piece.__init__(self, 3, -2, 4, 1)
         self.set([[0, 0, 0, 0],
@@ -67,7 +65,6 @@ class IPiece(Piece):
                   [0, 0, 0, 0]])
     
 class JPiece(Piece):
-    
     def __init__(self):
         Piece.__init__(self, 3, -1, 3, 2)
         self.set([[0, 0, 0, 0],
@@ -76,7 +73,6 @@ class JPiece(Piece):
                   [0, 0, 0, 0]])
         
 class LPiece(Piece):
-    
     def __init__(self):
         Piece.__init__(self, 2, -1, 3, 2)
         self.set([[0, 0, 0, 0],
@@ -85,7 +81,6 @@ class LPiece(Piece):
                   [0 ,0, 0, 0]])
         
 class TPiece(Piece):
-    
     def __init__(self):
         Piece.__init__(self, 2, -2, 3, 2)
         self.set([[0, 0, 0, 0, 0],
@@ -95,7 +90,6 @@ class TPiece(Piece):
                   [0, 0, 0, 0, 0]])
         
 class SPiece(Piece):
-    
     def __init__(self):
         Piece.__init__(self, 2, -1, 3, 2)
         self.set([[0, 0, 0, 0, 0],
@@ -103,10 +97,7 @@ class SPiece(Piece):
                   [0, 3, 3, 0, 0],
                   [0, 0, 0, 0, 0]])
                 
-# Z shaped piece.
 class ZPiece(Piece):
-    
-    # Initialize
     def __init__(self):
         Piece.__init__(self, 2, -1, 3, 2)
         self.set([[0, 0, 0, 0, 0],
