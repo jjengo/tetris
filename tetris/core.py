@@ -91,7 +91,7 @@ class Core(object):
         
         if self.state == Core.Running:
             if self.game.game_over():
-                self.game.mixer.stop_all()
+                self.game.mixer.stop_music()
                 self.state = Core.GameOver
                 self.time_to_menu = 200
         elif self.state == Core.GameOver:

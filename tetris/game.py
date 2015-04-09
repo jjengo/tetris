@@ -3,7 +3,7 @@ import pygame
 from pygame.locals import *
 from tetris.image import Gallery
 from tetris.util import Point, Dimension
-from tetris.sound import Sound, Mixer
+from tetris.sound import Mixer
 from tetris.piece import random_piece
 
 # Size of the grid matrix.
@@ -72,7 +72,7 @@ class Tetris(object):
         if not self.valid_move(self.curr_piece):
             self.curr_piece.pos.x -= dx
         else:
-            self.mixer.play(Sound.Lateral)
+            self.mixer.lateral.play()
             
         self.set_grid_piece(self.curr_piece)
     
@@ -86,13 +86,13 @@ class Tetris(object):
             if not self.valid_move(self.curr_piece):
                 self.curr_piece.rotate_right()
             else:
-                self.mixer.play(Sound.Rotate)
+                self.mixer.rotate.play()
         elif dr > 0:
             self.curr_piece.rotate_right()
             if not self.valid_move(self.curr_piece):
                 self.curr_piece.rotate_left()
             else:
-                self.mixer.play(Sound.Rotate)
+                self.mixer.rotate.play()
                 
         self.set_grid_piece(self.curr_piece)
     
@@ -141,7 +141,7 @@ class Tetris(object):
         # Update statistics.
         self.mixer.play_dropped(len(cleared))
         if self.stats.update(len(cleared)):
-            self.mixer.play(Sound.LevelUp)
+            self.mixer.level_up.play()
             self.update_speed()
             
         self.new_piece()        
@@ -227,7 +227,7 @@ class Tetris(object):
         self.grid = [[0 for y in range(GridSize.height)] for x in range(GridSize.width)]
         self.stats = Statistics()
         self.new_piece()
-        self.mixer.play(Sound.Start)
+        self.mixer.start.play()
         self.mixer.loop_music()
         self.fall_speed = 30
         self.time_to_drop = self.fall_speed
@@ -235,7 +235,7 @@ class Tetris(object):
         
     # End the game
     def end_game(self):
-        self.mixer.play(Sound.GameOver)
+        self.mixer.game_over.play()
         self.running = False
         
     # Return if game is over
