@@ -1,20 +1,14 @@
-# Author: Jonathan Jengo
-
 import sys
 import pygame
 from pygame.locals import *
-from . import image as Image
-from .game import Tetris
-from .image import Gallery
-from .util import ScreenSize
+from tetris.game import Tetris
+from tetris.image import Gallery
+from tetris.util import ScreenSize
 
-# Core engine
-class Core:
+class Core(object):
     
-    # Various game states
     Menu, Running, Paused, GameOver = range(4)
-    
-    # Initialize
+
     def __init__(self, gfx):
         self.gfx = gfx
         self.keys = {}
@@ -22,9 +16,8 @@ class Core:
         self.gallery = Gallery()
         self.game = Tetris()
         self.state = Core.Menu
-        self.timeToMenu = 0
-        
-    # Run the core engine.
+        self.time_to_menu = 0
+
     def run(self):
         
         clock = pygame.time.Clock()
@@ -33,7 +26,7 @@ class Core:
             
             self.keys = {}
             for event in pygame.event.get():
-                self.handleEvent(event)
+                self.handle_event(event)
                 
             self.gfx.fill((0, 0, 0))
             
@@ -43,7 +36,7 @@ class Core:
             
             # Game State: Running
             elif self.state == Core.Running:
-                self.game.processKeyEvents(self.keys)
+                self.game.process_key_events(self.keys)
                 self.game.update()
                 self.game.render(self.gfx, self.gallery)
             
@@ -55,7 +48,7 @@ class Core:
             elif self.state == Core.GameOver:
                 self.game.render(self.gfx, self.gallery)
             
-            self.processKeyEvents()
+            self.process_key_events()
             self.update()
             self.render()
             
@@ -63,7 +56,7 @@ class Core:
             clock.tick(30)
             
     # Handle caught pygame event
-    def handleEvent(self, event):
+    def handle_event(self, event):
 
         # Handle exit events.
         if event.type == QUIT:
@@ -78,7 +71,7 @@ class Core:
                 del self.keys[event.key]
             
     # Process all relevant key events
-    def processKeyEvents(self):
+    def process_key_events(self):
         
         if K_RETURN in self.keys:
             if self.state == Core.Menu:
@@ -88,22 +81,22 @@ class Core:
         if K_p in self.keys:
             if self.state == Core.Running:
                 self.state = Core.Paused
-                self.game.mixer.stopMusic()
+                self.game.mixer.stop_music()
             elif self.state == Core.Paused:
                 self.state = Core.Running
-                self.game.mixer.loopMusic()
+                self.game.mixer.loop_music()
     
     # Update all values
     def update(self):
         
         if self.state == Core.Running:
-            if self.game.gameOver():
-                self.game.mixer.stopall()
+            if self.game.game_over():
+                self.game.mixer.stop_all()
                 self.state = Core.GameOver
-                self.timeToMenu = 200
+                self.time_to_menu = 200
         elif self.state == Core.GameOver:
-            self.timeToMenu -= 1
-            if not self.timeToMenu:
+            self.time_to_menu -= 1
+            if not self.time_to_menu:
                 self.state = Core.Menu
     
     # Render values.
@@ -114,10 +107,8 @@ class Core:
             label = font.render("PAUSED", 1, (255, 255, 255))
             self.gfx.blit(label, ((ScreenSize[0] / 2) - (label.get_width() / 2), 180))
 
-# Start menu
-class Menu:
+class Menu(object):
     
-    # Render menu screen
     def render(self, gfx, gallery):
         
         bg = (0, 69, 134)
@@ -138,4 +129,3 @@ class Menu:
         font = pygame.font.SysFont("OCR A Extended", 12)
         label = font.render("Jonathan Jengo", 1, fg)
         gfx.blit(label, ((ScreenSize[0] / 2) - (label.get_width() / 2), 425))
-        

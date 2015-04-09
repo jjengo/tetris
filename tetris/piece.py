@@ -1,10 +1,7 @@
-# Author: Jonathan Jengo
-
 from random import randint
-from .util import Point, Dimension
-  
-# Create a random piece
-def randomPiece():
+from tetris.util import Point, Dimension
+
+def random_piece():
     
     rand = randint(0, 6)
     piece = None
@@ -34,9 +31,8 @@ def randomPiece():
     return piece
     
 # A 4x4 matrix representing a grid piece
-class Piece:
+class Piece(object):
     
-    # Initialize
     def __init__(self):
         self.grid = []
         self.pos = Point(0, 0)
@@ -49,37 +45,35 @@ class Piece:
         self.origin = Point(self.left(), self.top())
     
     # Rotate piece grid counter clockwise
-    def rotateLeft(self):
+    def rotate_left(self):
         rotated = zip(*self.grid)[::-1]
         self.set(rotated)
         self.size = self.size.rotate()
         
     # Rotate piece grid clockwise
-    def rotateRight(self):
+    def rotate_right(self):
         rotated = zip(*self.grid[::-1])
         self.set(rotated)
         self.size = self.size.rotate()
 
     # Return the first non-empty row
     def top(self):
-        for y in range(len(self.grid)):
-            if len([x for x in range(len(self.grid[y])) if self.grid[y][x]]):
+        for y in xrange(len(self.grid)):
+            if len([x for x in xrange(len(self.grid[y])) if self.grid[y][x]]):
                 return y
         return 0
     
     # Return the first non-empty column
     def left(self):
         left = 5
-        for y in range(len(self.grid)):
-            for x in range(len(self.grid[y])):
+        for y in xrange(len(self.grid)):
+            for x in xrange(len(self.grid[y])):
                 if self.grid[y][x] and x < left:
                     left = x
         return left
 
-# Square shaped piece.
 class SquarePiece(Piece):
     
-    # Initialize.
     def __init__(self):
         Piece.__init__(self)
         self.size.set(2, 2)
@@ -88,10 +82,8 @@ class SquarePiece(Piece):
                   [0, 1, 1, 0],
                   [0, 0, 0, 0]])
 
-# Long shaped piece.
 class IPiece(Piece):
     
-    # Initialize.
     def __init__(self):
         Piece.__init__(self)
         self.size.set(4, 1)
@@ -101,10 +93,8 @@ class IPiece(Piece):
                   [0, 0, 0, 0],
                   [0, 0, 0, 0]])
     
-# J shaped piece.
 class JPiece(Piece):
     
-    # Initialize.
     def __init__(self):
         Piece.__init__(self)
         self.size.set(3, 2)
@@ -113,10 +103,8 @@ class JPiece(Piece):
                   [0, 0, 2, 0],
                   [0, 0, 0, 0]])
         
-# L shaped piece
 class LPiece(Piece):
     
-    # Initialize
     def __init__(self):
         Piece.__init__(self)
         self.size.set(3, 2)
@@ -125,10 +113,8 @@ class LPiece(Piece):
                   [0, 2, 0, 0],
                   [0 ,0, 0, 0]])
         
-# T shaped piece.
 class TPiece(Piece):
     
-    # Initialize
     def __init__(self):
         Piece.__init__(self)
         self.size.set(3, 2)
@@ -138,10 +124,8 @@ class TPiece(Piece):
                   [0, 0, 1, 0, 0],
                   [0, 0, 0, 0, 0]])
         
-# S shaped piece.
 class SPiece(Piece):
     
-    # Initialize
     def __init__(self):
         Piece.__init__(self)
         self.size.set(3, 2)
@@ -161,5 +145,3 @@ class ZPiece(Piece):
                   [0, 3, 3, 0, 0],
                   [0, 0, 3, 3, 0],
                   [0, 0, 0, 0, 0]])
-        
-        

@@ -1,51 +1,46 @@
-# Author: Jonathan Jengo
-
 import sys
 import pygame
 from pygame.locals import *
-
-from .image import Gallery
-from .util import Point, Dimension
-from .sound import Sound, Mixer
-from .piece import Piece, randomPiece
+from tetris.image import Gallery
+from tetris.util import Point, Dimension
+from tetris.sound import Sound, Mixer
+from tetris.piece import random_piece
 
 # Size of the grid matrix.
 GridSize = Dimension(10, 20)
 
-# Tetris game engine
-class Tetris:
+class Tetris(object):
 
-    # Initialize
     def __init__(self):
         self.grid = []
         self.mixer = Mixer()
         self.stats = Statistics()
-        self.currPiece = randomPiece()
-        self.nextPiece = randomPiece()
-        self.fallSpeed = 30
-        self.timeToDrop = self.fallSpeed
+        self.curr_piece = random_piece()
+        self.next_piece = random_piece()
+        self.fall_speed = 30
+        self.time_to_drop = self.fall_speed
         self.running = False
 
     # Process key state events.
-    def processKeyEvents(self, keys):
+    def process_key_events(self, keys):
 
         if K_LEFT in keys:
-            self.lateralPieceMove(-1)
+            self.lateral_piece_move(-1)
         elif K_RIGHT in keys:
-            self.lateralPieceMove(1)
+            self.lateral_piece_move(1)
         elif K_DOWN in keys:
-            self.dropPiece()
+            self.drop_piece()
         elif K_UP in keys:
-            self.rotatePiece(1)
+            self.rotate_piece(1)
             
     # Update all states.
     def update(self):
         
         # Countdown to current piece drop
-        self.timeToDrop -= 1
-        if self.timeToDrop < 0:
-            self.timeToDrop = self.fallSpeed
-            self.descendPiece()
+        self.time_to_drop -= 1
+        if self.time_to_drop < 0:
+            self.time_to_drop = self.fall_speed
+            self.descend_piece()
         
     # Render all sprites.
     def render(self, gfx, gallery):
@@ -54,144 +49,144 @@ class Tetris:
         self.stats.render(gfx)
         
         # Render grid blocks
-        for x in range(GridSize.width):
-            for y in range(GridSize.height):
+        for x in xrange(GridSize.width):
+            for y in xrange(GridSize.height):
                 if self.grid[x][y] > 0:
-                    gallery.renderBlock(gfx, self.stats.level, self.grid[x][y] - 1, Point(x, y))
+                    gallery.render_block(gfx, self.stats.level, self.grid[x][y] - 1, Point(x, y))
                 elif self.grid[x][y] < 0:
-                    gallery.renderGhost(gfx, (self.grid[x][y] * -1) - 1, Point(x, y))
+                    gallery.render_ghost(gfx, (self.grid[x][y] * -1) - 1, Point(x, y))
 
         # Render next blocks
-        for y in range(len(self.nextPiece.grid)):
-            for x in range(len(self.nextPiece.grid[y])):
-                if self.nextPiece.grid[y][x]:
-                    pt = Point(x - self.nextPiece.origin.x, y - self.nextPiece.origin.y)
-                    gallery.renderNext(gfx, self.stats.level, self.nextPiece.grid[y][x] - 1, self.nextPiece.size, pt)
+        for y in xrange(len(self.next_piece.grid)):
+            for x in xrange(len(self.next_piece.grid[y])):
+                if self.next_piece.grid[y][x]:
+                    pt = Point(x - self.next_piece.origin.x, y - self.next_piece.origin.y)
+                    gallery.render_next(gfx, self.stats.level, self.next_piece.grid[y][x] - 1, self.next_piece.size, pt)
 
     # Translate piece by delta
-    def lateralPieceMove(self, dx):
+    def lateral_piece_move(self, dx):
         
-        self.clearGridPiece(self.currPiece)
+        self.clear_grid_piece(self.curr_piece)
         
-        self.currPiece.pos.x += dx
-        if not self.validMove(self.currPiece):
-            self.currPiece.pos.x -= dx
+        self.curr_piece.pos.x += dx
+        if not self.valid_move(self.curr_piece):
+            self.curr_piece.pos.x -= dx
         else:
             self.mixer.play(Sound.Lateral)
             
-        self.setGridPiece(self.currPiece)
+        self.set_grid_piece(self.curr_piece)
     
     # Rotate piece by delta
-    def rotatePiece(self, dr):
+    def rotate_piece(self, dr):
         
-        self.clearGridPiece(self.currPiece)
+        self.clear_grid_piece(self.curr_piece)
         
         if dr < 0:
-            self.currPiece.rotateLeft()
-            if not self.validMove(self.currPiece):
-                self.currPiece.rotateRight()
+            self.curr_piece.rotate_left()
+            if not self.valid_move(self.curr_piece):
+                self.curr_piece.rotate_right()
             else:
                 self.mixer.play(Sound.Rotate)
         elif dr > 0:
-            self.currPiece.rotateRight()
-            if not self.validMove(self.currPiece):
-                self.currPiece.rotateLeft()
+            self.curr_piece.rotate_right()
+            if not self.valid_move(self.curr_piece):
+                self.curr_piece.rotate_left()
             else:
                 self.mixer.play(Sound.Rotate)
                 
-        self.setGridPiece(self.currPiece)
+        self.set_grid_piece(self.curr_piece)
     
     # Descent piece by a single row
-    def descendPiece(self):
-        self.dropPiece(1)
+    def descend_piece(self):
+        self.drop_piece(1)
     
     # Drop piece to the bottom
-    def dropPiece(self, incr=GridSize.height):
+    def drop_piece(self, incr=GridSize.height):
         
-        self.clearGridPiece(self.currPiece)
+        self.clear_grid_piece(self.curr_piece)
         
         # Find grid bottom
         place = False
         for i in range(incr):
-            self.currPiece.pos.y += 1
-            if not self.validMove(self.currPiece):
-                self.currPiece.pos.y -= 1
+            self.curr_piece.pos.y += 1
+            if not self.valid_move(self.curr_piece):
+                self.curr_piece.pos.y -= 1
                 place = True
                 break
         
-        self.setGridPiece(self.currPiece)
+        self.set_grid_piece(self.curr_piece)
         if place:
-            if self.currPiece.pos.y + self.currPiece.origin.x <= 0:
-                self.endGame()
+            if self.curr_piece.pos.y + self.curr_piece.origin.x <= 0:
+                self.end_game()
             else:
-                self.placePiece(self.currPiece)
+                self.place_piece(self.curr_piece)
 
     # Place piece at grid bottom
-    def placePiece(self, piece):
+    def place_piece(self, piece):
         
         # Find cleared rows
         cleared = []
-        for y in range(GridSize.height):
-            if (len([x for x in range(GridSize.width) if self.grid[x][y]]) == GridSize.width):
+        for y in xrange(GridSize.height):
+            if (len([x for x in xrange(GridSize.width) if self.grid[x][y]]) == GridSize.width):
                 cleared.append(y)
                 
         # Clear rows & shift down remains.
         if cleared:
             for row in cleared:
-                for x in range(GridSize.width):
+                for x in xrange(GridSize.width):
                     self.grid[x][row] = 0
             for row in cleared:
-                self.shiftRowDown(row)
+                self.shift_row_down(row)
             
         # Update statistics.
-        self.mixer.playDropped(len(cleared))
+        self.mixer.play_dropped(len(cleared))
         if self.stats.update(len(cleared)):
             self.mixer.play(Sound.LevelUp)
-            self.updateSpeed()
+            self.update_speed()
             
-        self.newPiece()        
+        self.new_piece()        
     
-    def updateSpeed(self):
-        if self.fallSpeed >= 2:
-            if self.fallSpeed < 5:
-                self.fallSpeed -= 1
-            elif self.fallSpeed < 10:
-                self.fallSpeed -= 2
+    def update_speed(self):
+        if self.fall_speed >= 2:
+            if self.fall_speed < 5:
+                self.fall_speed -= 1
+            elif self.fall_speed < 10:
+                self.fall_speed -= 2
             else:
-                self.fallSpeed -= 3
+                self.fall_speed -= 3
             
     # Shift above rows down from cleared row.
-    def shiftRowDown(self, row):
-        for x in range(GridSize.width):
-            for y in reversed(range(row)):
+    def shift_row_down(self, row):
+        for x in xrange(GridSize.width):
+            for y in reversed(xrange(row)):
                 self.grid[x][y + 1] = self.grid[x][y]
                 self.grid[x][y] = 0
 
     # Set piece values into grid.                
-    def setGridPiece(self, piece):
+    def set_grid_piece(self, piece):
         
         # Find and set piece ghost grid points
         yorig = piece.pos.y
         for y in range(GridSize.height - piece.pos.y):
             piece.pos.y += 1
-            if not self.validMove(piece):
+            if not self.valid_move(piece):
                 piece.pos.y -= 1
                 break
         
-        for y in range(len(piece.grid)):
-            for x in range(len(piece.grid[y])):
+        for y in xrange(len(piece.grid)):
+            for x in xrange(len(piece.grid[y])):
                 if piece.grid[y][x]:
                     self.grid[piece.pos.x + x][piece.pos.y + y] = (piece.grid[y][x] * -1)
         
         # Set grid values for piece.
         piece.pos.y = yorig
-        for y in range(len(piece.grid)):
-            for x in range(len(piece.grid[y])):
+        for y in xrange(len(piece.grid)):
+            for x in xrange(len(piece.grid[y])):
                 if piece.grid[y][x] and piece.pos.y + y >= 0:
                     self.grid[piece.pos.x + x][piece.pos.y + y] = piece.grid[y][x]
     
     # Remove piece values from grid.
-    def clearGridPiece(self, piece):
+    def clear_grid_piece(self, piece):
         
         # Clear ghost grid points.
         for x in range(GridSize.width):
@@ -206,7 +201,7 @@ class Tetris:
                     self.grid[piece.pos.x + x][piece.pos.y + y] = 0
     
     # Check if piece can be moved to new location
-    def validMove(self, piece):
+    def valid_move(self, piece):
         
         for y in range(len(piece.grid)):
             for x in range(len(piece.grid[y])):
@@ -220,39 +215,37 @@ class Tetris:
         return True
     
     # Create new piece.
-    def newPiece(self):
-        self.currPiece = self.nextPiece
-        self.nextPiece = randomPiece()
-        if not self.validMove(self.currPiece):
-            self.endGame()
-        self.setGridPiece(self.currPiece)
+    def new_piece(self):
+        self.curr_piece = self.next_piece
+        self.next_piece = random_piece()
+        if not self.valid_move(self.curr_piece):
+            self.end_game()
+        self.set_grid_piece(self.curr_piece)
     
     # Start a new game.
     def newGame(self):
         self.grid = [[0 for y in range(GridSize.height)] for x in range(GridSize.width)]
         self.stats = Statistics()
-        self.newPiece()
+        self.new_piece()
         self.mixer.play(Sound.Start)
-        self.mixer.loopMusic()
-        self.fallSpeed = 30
-        self.timeToDrop = self.fallSpeed
+        self.mixer.loop_music()
+        self.fall_speed = 30
+        self.time_to_drop = self.fall_speed
         self.running = True
         
     # End the game
-    def endGame(self):
+    def end_game(self):
         self.mixer.play(Sound.GameOver)
         self.running = False
         
     # Return if game is over
-    def gameOver(self):
+    def game_over(self):
         return not self.running
 
-# Game statistics
-class Statistics:
+class Statistics(object):
     
     Scores = {0:10, 1:100, 2:300, 3:500, 4:1000}
     
-    # Initialize
     def __init__(self):
         self.score = 0
         self.level = 0

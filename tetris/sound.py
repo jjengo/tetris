@@ -1,23 +1,19 @@
-# Author: Jonathan Jengo
-
 import os
 import pygame
 
-# Load a sound from the file system
 def load(filename):
     return pygame.mixer.Sound(os.path.join("sounds", filename))
 
-def loadMusic(filename):
+def load_music(filename):
     return pygame.mixer.music.load(os.path.join("sounds", filename))
 
 # Various sounds
-class Sound:
+class Sound(object):
     Clear, Drop, GameOver, Lateral, LevelUp, Rotate, Select, Start, Tetris = range(9)
 
 # Sound mixer
-class Mixer:
+class Mixer(object):
     
-    # Initialize
     def __init__(self):
         self.sounds = {}
         self.sounds[Sound.Clear] = load("clear.wav")
@@ -29,7 +25,7 @@ class Mixer:
         self.sounds[Sound.Select] = load("select.wav")
         self.sounds[Sound.Start] = load("start.wav")
         self.sounds[Sound.Tetris] = load("tetris.wav")
-        self.music = loadMusic("tetrismusic.mp3")
+        #self.music = loadMusic("tetrismusic.mp3")
         self.looping = {}
         
     # Play a sound
@@ -41,8 +37,9 @@ class Mixer:
             self.sounds[key].play(loops)
             
     # Play music
-    def loopMusic(self):
-        pygame.mixer.music.play(-1, 0.0)
+    def loop_music(self):
+        pass
+        #pygame.mixer.music.play(-1, 0.0)
             
     # Play a looping sound
     def loop(self, key):
@@ -57,8 +54,9 @@ class Mixer:
             self.looping[key] = False
             
     # Stop music
-    def stopMusic(self):
-        pygame.mixer.music.stop()
+    def stop_music(self):
+        pass
+        #pygame.mixer.music.stop()
                         
     # Pause all playback of sounds
     def pause(self):
@@ -69,14 +67,14 @@ class Mixer:
         pygame.mixer.unpause()
             
     # Stop playback of all sounds
-    def stopall(self):
-        self.stopMusic()
+    def stop_all(self):
+        self.stop_music()
         for key in self.looping:
             self.sounds[key].stop()
             self.looping[key] = False
             
     # Play correct sound for placed piece.
-    def playDropped(self, cleared):
+    def play_dropped(self, cleared):
         if cleared == 4:
             self.play(Sound.Tetris)
         elif cleared > 0:
