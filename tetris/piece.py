@@ -1,49 +1,24 @@
-from random import randint
+import random
 from tetris.util import Point, Dimension
 
 def random_piece():
-    
-    rand = randint(0, 6)
-    piece = None
-    
-    if rand == 0:
-        piece = SquarePiece()
-        piece.pos.set(3, -1)
-    elif rand == 1:
-        piece = IPiece()
-        piece.pos.set(3, -2)
-    elif rand == 2:
-        piece = JPiece()
-        piece.pos.set(3, -1)
-    elif rand == 3:
-        piece = LPiece()
-        piece.pos.set(2, -1)
-    elif rand == 4:
-        piece = TPiece()
-        piece.pos.set(2, -2)
-    elif rand == 5:
-        piece = SPiece()
-        piece.pos.set(2, -1)
-    elif rand == 6:
-        piece = ZPiece()
-        piece.pos.set(2, -1)
-    
-    return piece
-    
+    pieces = [SquarePiece, IPiece, JPiece, LPiece, TPiece, SPiece, ZPiece]
+    return random.choice(pieces)()
+
 # A 4x4 matrix representing a grid piece
 class Piece(object):
-    
-    def __init__(self):
+
+    def __init__(self, x, y, width, height):
         self.grid = []
-        self.pos = Point(0, 0)
+        self.pos = Point(x, y)
         self.origin = Point(0, 0)
-        self.size = Dimension(0, 0)
+        self.size = Dimension(width, height)
     
     # Set the grid values.
     def set(self, grid):
         self.grid = grid
         self.origin = Point(self.left(), self.top())
-    
+
     # Rotate piece grid counter clockwise
     def rotate_left(self):
         rotated = zip(*self.grid)[::-1]
@@ -75,8 +50,7 @@ class Piece(object):
 class SquarePiece(Piece):
     
     def __init__(self):
-        Piece.__init__(self)
-        self.size.set(2, 2)
+        Piece.__init__(self, 3, -1, 2, 2)
         self.set([[0, 0, 0, 0],
                   [0, 1, 1, 0],
                   [0, 1, 1, 0],
@@ -85,8 +59,7 @@ class SquarePiece(Piece):
 class IPiece(Piece):
     
     def __init__(self):
-        Piece.__init__(self)
-        self.size.set(4, 1)
+        Piece.__init__(self, 3, -2, 4, 1)
         self.set([[0, 0, 0, 0],
                   [0, 0, 0, 0],
                   [1, 1, 1, 1],
@@ -96,8 +69,7 @@ class IPiece(Piece):
 class JPiece(Piece):
     
     def __init__(self):
-        Piece.__init__(self)
-        self.size.set(3, 2)
+        Piece.__init__(self, 3, -1, 3, 2)
         self.set([[0, 0, 0, 0],
                   [2, 2, 2, 0],
                   [0, 0, 2, 0],
@@ -106,8 +78,7 @@ class JPiece(Piece):
 class LPiece(Piece):
     
     def __init__(self):
-        Piece.__init__(self)
-        self.size.set(3, 2)
+        Piece.__init__(self, 2, -1, 3, 2)
         self.set([[0, 0, 0, 0],
                   [0, 2, 2, 2],
                   [0, 2, 0, 0],
@@ -116,8 +87,7 @@ class LPiece(Piece):
 class TPiece(Piece):
     
     def __init__(self):
-        Piece.__init__(self)
-        self.size.set(3, 2)
+        Piece.__init__(self, 2, -2, 3, 2)
         self.set([[0, 0, 0, 0, 0],
                   [0, 0, 0, 0, 0],
                   [0, 1, 1, 1, 0],
@@ -127,8 +97,7 @@ class TPiece(Piece):
 class SPiece(Piece):
     
     def __init__(self):
-        Piece.__init__(self)
-        self.size.set(3, 2)
+        Piece.__init__(self, 2, -1, 3, 2)
         self.set([[0, 0, 0, 0, 0],
                   [0, 0, 3, 3, 0],
                   [0, 3, 3, 0, 0],
@@ -139,8 +108,7 @@ class ZPiece(Piece):
     
     # Initialize
     def __init__(self):
-        Piece.__init__(self)
-        self.size.set(3, 2)
+        Piece.__init__(self, 2, -1, 3, 2)
         self.set([[0, 0, 0, 0, 0],
                   [0, 3, 3, 0, 0],
                   [0, 0, 3, 3, 0],
