@@ -8,7 +8,7 @@ from tetris.piece import random_piece
 
 # Size of the grid matrix.
 GridSize = Dimension(10, 20)
-#Test comment.
+
 class Tetris(object):
 
     def __init__(self):
