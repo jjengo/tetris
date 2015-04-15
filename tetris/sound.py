@@ -28,7 +28,7 @@ class Mixer(object):
         self.start = Sound('start.wav')
         self.tetris = Sound('tetris.wav')
         self.game_over = Sound('gameover.wav')
-        self.music = load_music('tetrismusic.mp3')
+        self.music = load_music('tetrismusic.wav')
 
     def loop_music(self):
         pygame.mixer.music.play(-1, 0.0)
